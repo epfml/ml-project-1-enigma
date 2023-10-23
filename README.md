@@ -2,4 +2,4 @@
 ## Team Members  
 Eymeric Boyer 284571  
 Fouad Monsef  
-Hugo Lagergren  
+Hugo Lagergren
