@@ -1,6 +1,9 @@
 # Ignore data folder as the files are too large to be pushed to git anyway
 data/
 
+# Ignore .idea/ folder as it is machine and IDE dependent
+.idea/
+
 # Now adding common ignored files
 # Compiled source #
 ###################
