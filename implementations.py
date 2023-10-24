@@ -67,7 +67,7 @@ def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma):
 
     # Compute the overall MSE loss for all samples after the updates
     e = y - np.dot(tx, w)
-    loss = 0.5 * np.mean(e ** 2)
+    loss = 0.5 * np.mean(e**2)
 
     return w, loss
 
@@ -90,7 +90,7 @@ def least_squares(y, tx):
 
     # Compute the MSE loss
     e = y - np.dot(tx, w)
-    loss = 0.5 * np.mean(e ** 2)
+    loss = 0.5 * np.mean(e**2)
 
     return w, loss
 
@@ -143,7 +143,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
         predictions = sigmoid(tx @ w)
 
         # Compute the gradient
-        gradient = (tx.T @ (predictions - y))/len(y)
+        gradient = (tx.T @ (predictions - y)) / len(y)
 
         # Update the weights
         w = w - gamma * gradient
@@ -177,7 +177,7 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
         predictions = sigmoid(tx @ w)
 
         # Compute the gradient of the regularized logistic loss
-        gradient = (tx.T @ (predictions - y)/len(y) + 2 * lambda_ * w)
+        gradient = tx.T @ (predictions - y) / len(y) + 2 * lambda_ * w
 
         # Update the weights
         w = w - gamma * gradient
