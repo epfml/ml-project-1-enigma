@@ -19,25 +19,18 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
         w: The last weight vector of the method
         loss: The corresponding loss value (cost function)
     """
-    # Initialize weights
+    # Initialize w
     w = initial_w
 
-    # Compute the error term
-    e = y - tx @ w
-
-    # Loop for max_iters iterations
     for _ in range(max_iters):
-        # Compute the error
-        e = y - np.dot(tx, w)
+        # Compute the gradient of the MSE with respect to weights
+        gradient = tx.T @ (tx @ w - y) / len(y)
 
-        # Compute the gradient
-        gradient = -np.dot(tx.T, e) / len(y)
-
-        # Update the weights using the gradient and step size (gamma)
+        # Update the weights using gradient descent
         w = w - gamma * gradient
 
-    # Compute the MSE loss
-    loss = 0.5 * np.mean(e ** 2)
+    # Compute the final MSE loss after all iterations
+    loss = np.mean((tx @ w - y) ** 2) / 2
 
     return w, loss
 
@@ -113,13 +106,18 @@ def ridge_regression(y, tx, lambda_):
         w: The last weight vector of the method
         loss: The corresponding loss value (cost function)
     """
-    # Calculate the weight vector using the normal equations for ridge regression
-    D = tx.shape[1]  # Number of features
-    w = np.linalg.inv(tx.T @ tx + lambda_ * np.eye(D)) @ tx.T @ y
+    # Identity matrix
+    I = np.identity(tx.shape[1])
 
-    # Compute the MSE loss with regularization
-    e = y - np.dot(tx, w)
-    loss = 0.5 * np.mean(e ** 2) + 0.5 * lambda_ * np.sum(w ** 2)
+    # Compute lambda_prime
+    lambda_prime = 2 * lambda_ * len(y)
+
+    # Compute the ridge regression weights using the formula
+    w = np.linalg.solve(tx.T @ tx + lambda_prime * I, tx.T @ y)
+
+    # Compute the ridge regression loss
+    e = y - tx @ w
+    loss = 0.5 * np.mean(e**2)
 
     return w, loss
 
