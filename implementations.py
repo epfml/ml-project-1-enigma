@@ -1,6 +1,11 @@
 import numpy as np
 
 
+def sigmoid(z):
+    """Sigmoid function"""
+    return 1 / (1 + np.exp(-z))
+
+
 def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
     """
     Linear regression using gradient descent
@@ -14,7 +19,11 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
         w: The last weight vector of the method
         loss: The corresponding loss value (cost function)
     """
+    # Initialize weights
     w = initial_w
+
+    # Compute the error term
+    e = y - tx @ w
 
     # Loop for max_iters iterations
     for _ in range(max_iters):
@@ -46,7 +55,28 @@ def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma):
         w: The last weight vector of the method
         loss: The corresponding loss value (cost function)
     """
-    # TODO
+    # Initialize weights
+    w = initial_w
+
+    # Loop for max_iters iterations
+    for _ in range(max_iters):
+        # Randomly select a sample index
+        i = np.random.randint(0, len(y))
+
+        # Compute the error for the selected sample
+        e_i = y[i] - np.dot(tx[i], w)
+
+        # Compute the gradient for the selected sample
+        gradient_i = -tx[i] * e_i
+
+        # Update the weights using the gradient of the selected sample and step size (gamma)
+        w = w - gamma * gradient_i
+
+    # Compute the overall MSE loss for all samples after the updates
+    e = y - np.dot(tx, w)
+    loss = 0.5 * np.mean(e ** 2)
+
+    return w, loss
 
 
 def least_squares(y, tx):
@@ -59,9 +89,15 @@ def least_squares(y, tx):
         w: The last weight vector of the method
         loss: The corresponding loss value (cost function)
     """
+    # Perform Singular Value Decomposition to optimize over large datasets
+    U, S, VT = np.linalg.svd(tx, full_matrices=False)
 
-    w = np.linalg.pinv(tx).dot(y)
-    loss = 0.5 * np.mean((y - tx.dot(w))**2)
+    # Calculate the weight vector using SVD
+    w = VT.T @ np.linalg.inv(np.diag(S)) @ U.T @ y
+
+    # Compute the MSE loss
+    e = y - np.dot(tx, w)
+    loss = 0.5 * np.mean(e ** 2)
 
     return w, loss
 
@@ -77,7 +113,15 @@ def ridge_regression(y, tx, lambda_):
         w: The last weight vector of the method
         loss: The corresponding loss value (cost function)
     """
-    # TODO
+    # Calculate the weight vector using the normal equations for ridge regression
+    D = tx.shape[1]  # Number of features
+    w = np.linalg.inv(tx.T @ tx + lambda_ * np.eye(D)) @ tx.T @ y
+
+    # Compute the MSE loss with regularization
+    e = y - np.dot(tx, w)
+    loss = 0.5 * np.mean(e ** 2) + 0.5 * lambda_ * np.sum(w ** 2)
+
+    return w, loss
 
 
 def logistic_regression(y, tx, initial_w, max_iters, gamma):
@@ -93,7 +137,23 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
         w: The last weight vector of the method
         loss: The corresponding loss value (cost function)
     """
-    # TODO
+    # Initialize w
+    w = initial_w
+
+    for _ in range(max_iters):
+        # Compute the predictions
+        predictions = sigmoid(tx @ w)
+
+        # Compute the gradient
+        gradient = (tx.T @ (predictions - y))/len(y)
+
+        # Update the weights
+        w = w - gamma * gradient
+
+    # Compute the logistic regression loss (cross-entropy loss)
+    loss = np.mean(np.log(1 + np.exp(tx.dot(w))) - y * (tx.dot(w)))
+
+    return w, loss
 
 
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
@@ -110,4 +170,21 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
         w: The last weight vector of the method
         loss: The corresponding loss value (cost function)
     """
-    # TODO
+    # Initialize the weights with the provided initial values
+    w = initial_w
+
+    # Gradient Descent for max_iters iterations
+    for _ in range(max_iters):
+        # Compute the predicted probabilities
+        predictions = sigmoid(tx @ w)
+
+        # Compute the gradient of the regularized logistic loss
+        gradient = (tx.T @ (predictions - y)/len(y) + 2 * lambda_ * w)
+
+        # Update the weights
+        w = w - gamma * gradient
+
+    # Compute the regularized logistic loss (negative log-likelihood with regularization)
+    loss = np.mean(np.log(1 + np.exp(tx.dot(w))) - y * (tx.dot(w)))
+
+    return w, loss
