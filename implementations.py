@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def mean_square_error_gd(y, tx, initial_w, max_iters, gamma):
+def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
     """
     Linear regression using gradient descent
     Arguments:
