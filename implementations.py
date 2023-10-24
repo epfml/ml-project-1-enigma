@@ -14,7 +14,23 @@ def mean_square_error_gd(y, tx, initial_w, max_iters, gamma):
         w: The last weight vector of the method
         loss: The corresponding loss value (cost function)
     """
-    # TODO
+    w = initial_w
+
+    # Loop for max_iters iterations
+    for _ in range(max_iters):
+        # Compute the error
+        e = y - np.dot(tx, w)
+
+        # Compute the gradient
+        gradient = -np.dot(tx.T, e) / len(y)
+
+        # Update the weights using the gradient and step size (gamma)
+        w = w - gamma * gradient
+
+    # Compute the MSE loss
+    loss = 0.5 * np.mean(e ** 2)
+
+    return w, loss
 
 
 def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma):
@@ -43,7 +59,11 @@ def least_squares(y, tx):
         w: The last weight vector of the method
         loss: The corresponding loss value (cost function)
     """
-    # TODO
+
+    w = np.linalg.pinv(tx).dot(y)
+    loss = 0.5 * np.mean((y - tx.dot(w))**2)
+
+    return w, loss
 
 
 def ridge_regression(y, tx, lambda_):
