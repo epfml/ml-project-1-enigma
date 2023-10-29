@@ -42,6 +42,7 @@ def load_csv_data(data_path, sub_sample=False):
     test_ids = x_test[:, 0].astype(dtype=int)
     x_train = x_train[:, 1:]
     x_test = x_test[:, 1:]
+    column_names = column_names[1:]
 
     # sub-sample
     if sub_sample:
