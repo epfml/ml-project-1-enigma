@@ -4,9 +4,6 @@ data/
 # Ignore .idea/ folder as it is machine and IDE dependent
 .idea/
 
-# Ignore test.ipynb as it was only used so we wouldn't have to load the data each test run
-test.ipynb
-
 # Now adding common ignored files
 # Compiled source #
 ###################
