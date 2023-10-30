@@ -13,6 +13,14 @@ from implementations import (
 
 
 def load_useless_features_file(file_path):
+    """
+    Loads the list of useless features contained in the file at file_path
+    Args:
+        file_path: path to the file. File has to be single column.
+
+    Returns:
+        numpy array containing the list of useless features
+    """
     useless_features_list = np.genfromtxt(
         file_path, delimiter=",", skip_header=1, dtype=str
     )
@@ -21,6 +29,15 @@ def load_useless_features_file(file_path):
 
 
 def get_pearson_coefficients(X, y):
+    """
+    Calculates the pearson coefficients for each feature in X in relation to y.
+    Args:
+        X: All data, potentially multiple features
+        y: Target data
+
+    Returns:
+    A list containing the Pearson coefficient of each feature
+    """
     # Number of features
     num_features = X.shape[1]
 
@@ -47,6 +64,16 @@ def get_pearson_coefficients(X, y):
 
 
 def get_spearman_coefficients(X, y):
+    """
+    Calculates the Spearman coefficients for each feature in X in relation to y.
+    Args:
+        X: All data, potentially multiple features
+        y: Target data
+
+    Returns:
+    A list containing the Spearman coefficient of each feature
+    """
+
     def spearman_rank_correlation(x, y):
         """
         Calculate the Spearman rank-order correlation coefficient between two variables.
@@ -55,9 +82,6 @@ def get_spearman_coefficients(X, y):
         :param y: array-like, the second variable
         :return: Spearman rank-order correlation coefficient
         """
-        # Convert input to numpy arrays
-        x = np.array(x)
-        y = np.array(y)
 
         # Calculate the ranks of x and y
         rank_x = np.argsort(np.argsort(x))
@@ -84,7 +108,18 @@ def get_spearman_coefficients(X, y):
 
 
 def load_column_names_by_type(file_path):
+    """
+    Loads the file containing the listed features that are of a specific type.
+    Will then be used to clean data.
+    Args:
+        file_path: The path of the tile.
+
+    Returns:
+    bools, seven_nines, seventyseven_ninetynine, specials, eight, eithgy_eight, fruits.
+    Each are np.array containing the names of the features that belong to their type.
+    """
     all_names = np.genfromtxt(file_path, delimiter=",", skip_header=1, dtype=str)
+
     with open(file_path, "r", encoding="utf-8-sig") as file:
         reader = csv.reader(file)
         categories = np.array(next(reader))
@@ -120,6 +155,24 @@ def clean_data(
     eithgy_eight,
     fruits,
 ):
+    """
+    Most of the data is not great. We use this function to apply a few sets of rules depending on the type of each column.
+    Example: In most of the bools columns, a value of 1 means yes, a value of 2 means no, a value of 7 or 9 means
+    the patient didn't answer the question. We change that to 1 means yes, -1 means no, 7 and 9 become nans as they should be
+    Args:
+        data: The data containing all features
+        column_names: The name of each column. In the same order as the column of data
+        bools: List of features of type bool
+        seven_nines: List of features of type seven_nine
+        seventyseven_ninetynine: List of features of type seventyseven_ninetynine
+        specials: List of features of type specials
+        eight: List of features of type eight
+        eithgy_eight: List of features of type eithgy_eight
+        fruits: List of features of type fruits
+
+    Returns:
+    The cleaned up data
+    """
     copied_data = np.copy(data)
 
     bools_columns = np.where(np.in1d(column_names, bools))[0]
@@ -183,6 +236,17 @@ def clean_data(
 
 
 def replace_values(data, column_index, value, new_value):
+    """
+    Replaces all elements that are value by new_value in the column at column_index of data.
+    Args:
+        data: The data containing all features
+        column_index: column index of feature to modify
+        value: old value
+        new_value: changed value
+
+    Returns:
+    The data with the modified column
+    """
     feature = data[:, column_index]
     feature[feature == value] = new_value
     data[:, column_index] = feature
@@ -192,7 +256,12 @@ def replace_values(data, column_index, value, new_value):
 def clean_outliers(data):
     """
     Cleans the dataset from outliers.
-    The first quantile and last quantile outliers are replaced by the median without outliers.
+    The first and last 3 percentile outliers are replaced by the median without outliers.
+    Args:
+        data: The data
+
+    Returns:
+    The cleaned data
     """
     cleaned_data = np.copy(data)
 
@@ -217,6 +286,15 @@ def clean_outliers(data):
 
 
 def remove_small_variance_features(data_train, data_test):
+    """
+    Removed features with a variance over mean ratio smaller than 0.01
+    Args:
+        data_train: the training set (X_train)
+        data_test: the testing set (X_test
+
+    Returns:
+    The cleaned up X_train and X_test
+    """
     cleaned_data_train = np.copy(data_train)
     cleaned_data_test = np.copy(data_test)
     # Calculate the variance for each feature
@@ -238,6 +316,14 @@ def remove_small_variance_features(data_train, data_test):
 
 
 def replace_nans_by_mean(data):
+    """
+    Replaces all nans in data by the mean of their column.
+    Args:
+        data: The data
+
+    Returns:
+    The cleaned up data
+    """
     copied_data = np.copy(data)
     means = np.nanmean(copied_data, axis=0)
 
@@ -249,12 +335,30 @@ def replace_nans_by_mean(data):
 
 
 def z_score_normalization(data):
+    """
+    Normalizes every column of data.
+    Args:
+        data: The data
+
+    Returns:
+    The normalized data
+    """
     mean_vals = np.mean(data, axis=0)
     std_dev = np.std(data, axis=0)
     return (data - mean_vals) / std_dev
 
 
 def remove_features_with_small_pearson_correlation(data_train, target_train, data_test):
+    """
+    Removes all features with a |Pearson correlation to the target variable| smaller than 0.01 (in absolute value).
+    Args:
+        data_train: The training set (X_train)
+        target_train: The training target variables (y_train)
+        data_test: The testing set (X_test)
+
+    Returns:
+    The cleaned up X_train and X_test
+    """
     cleaned_data_train = np.copy(data_train)
     cleaned_data_test = np.copy(data_test)
 
@@ -275,6 +379,16 @@ def remove_features_with_small_pearson_correlation(data_train, target_train, dat
 def remove_features_with_small_spearman_correlation(
     data_train, target_train, data_test
 ):
+    """
+    Removes all features with a |Spearman correlation to the target variable| smaller than 0.01 (in absolute value).
+    Args:
+        data_train: The training set (X_train)
+        target_train: The training target variables (y_train)
+        data_test: The testing set (X_test)
+
+    Returns:
+    The cleaned up X_train and X_test
+    """
     cleaned_data_train = np.copy(data_train)
     cleaned_data_test = np.copy(data_test)
 
@@ -300,6 +414,21 @@ def run_model(
     model_parameters,
     threshold,
 ):
+    """
+    Runs the given model and outputs the weights, loss and predictions of this model
+    Args:
+        x_train: The training set
+        y_train: The training target variables
+        x_test: The testing set
+        model_name: The name of the model
+        model_parameters: The parameters of the model in the form of a dict
+        threshold: The threshold below which a value is classified as -1 and above which it is classified as 1 (usually 0)
+
+    Returns:
+        w: The last weight vector of the method
+        loss: The corresponding loss value (cost function)
+        y_pred: The predictions of the model over x_test
+    """
     if model_name == "least_squares":
         w, loss = least_squares(y=y_train, tx=x_train)
     elif model_name == "reg_logistic_regression":
@@ -345,4 +474,5 @@ def run_model(
     y_pred = x_test @ w
     y_pred[y_pred >= threshold] = 1
     y_pred[y_pred < threshold] = -1
+
     return w, loss, y_pred
