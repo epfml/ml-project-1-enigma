@@ -3,8 +3,6 @@ import os
 from helpers import load_csv_data, create_csv_submission
 from run_helpers import (
     load_useless_features_file,
-    get_pearson_coefficients,
-    get_spearman_coefficients,
     load_column_names_by_type,
     clean_data,
     clean_outliers,
@@ -14,14 +12,6 @@ from run_helpers import (
     remove_features_with_small_pearson_correlation,
     remove_features_with_small_spearman_correlation,
     run_model,
-)
-from implementations import (
-    least_squares,
-    reg_logistic_regression,
-    ridge_regression,
-    logistic_regression,
-    mean_squared_error_sgd,
-    mean_squared_error_gd,
 )
 import numpy as np
 
