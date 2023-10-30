@@ -34,7 +34,7 @@ HELPER_FILES_DIR = os.path.join(ROOT_DIR, "helper_files")
 # Set hyperparameters
 models_to_run = ["least_squares"]
 threshold = 0  # The threshold below which we return y = -1 and above which we return y = 1. Usually 0.
-create_csv = False
+create_csv = True
 models_parameters = {
     "least_squares": {},
     "reg_logistic_regression": {"lambda_": 0.0001, "max_iters": 10000, "gamma": 0.5},
