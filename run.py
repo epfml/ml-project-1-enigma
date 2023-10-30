@@ -22,7 +22,7 @@ PREDICTIONS_DIR = os.path.join(ROOT_DIR, "predictions")
 HELPER_FILES_DIR = os.path.join(ROOT_DIR, "helper_files")
 
 # Set hyperparameters
-models_to_run = ["least_squares"]
+models_to_run = ["logistic_regression", "reg_logistic_regression", "ridge_regression"]
 threshold = 0  # The threshold below which we return y = -1 and above which we return y = 1. Usually 0.
 create_csv = True
 models_parameters = {
